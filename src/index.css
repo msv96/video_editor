@@ -1,6 +1,7 @@
 body {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 	transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0%;
 }
 .file-drop {
 	width: 100%;
@@ -27,51 +28,19 @@ body {
 	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
 		rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
-.toggle {
-	background-color: rgb(185, 185, 185);
-	color: yellow;
-	height: 2em;
-	width: 2em;
-	text-align: center;
-	line-height: 2em;
-	vertical-align: middle;
-	border-radius: 100em;
-	font-size: x-large;
-	z-index: 100;
-	position: fixed;
-	bottom: 1em;
-	right: 1em;
-	cursor: pointer;
-	transition: background-color 0.2s ease;
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Old versions of Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
-}
-.toggle:hover {
-	transition: background-color 0.2s ease;
-	background-color: rgb(146, 146, 146);
-}
-/* Styling for Editing */
 .wrapper {
-	width: 60%;
-	max-width: 90%;
+	width: auto;
 	margin: auto;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Old versions of Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+  text-align: center;
 }
 .video {
-	width: 100%;
+  margin: auto;
 }
 .playback {
 	position: relative;
@@ -192,15 +161,17 @@ hr {
 	gap: 10px;
 	justify-content: center;
 }
-.mask {
+.Main {
 	position: absolute;
-	border: 2px dashed red;
-	background-color: transparent;
-	width: 19vw;
-	height: 33.6vw;
-	cursor: move;
-	z-index: 1;
+  width: 100%;
+  z-index: 1;
 }
-.none {
-	display: none;
+.mask {
+  position: relative;
+	border: 2px dashed blue;
+	background-color: transparent;
+	width: 403px;
+	height: 716px;
+	cursor: move;
+	z-index: 2;
 }

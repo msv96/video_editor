@@ -7,8 +7,9 @@ import {
 	faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+import Mask from "./Mask";
 
-class Editor extends React.Component {
+class VideoEditor extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -303,7 +304,7 @@ class Editor extends React.Component {
 	render = () => {
 		return (
 			<div className="wrapper">
-				<div className={this.state.isMask ? "mask" : "none"}></div>
+				{this.state.isMask ? <Mask /> : ""}
 				<video
 					className="video"
 					autoload="metadata"
@@ -477,4 +478,4 @@ class Editor extends React.Component {
 	};
 }
 
-export default Editor;
+export default VideoEditor;
