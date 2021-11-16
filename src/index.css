@@ -1,13 +1,206 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+	transition: background-color 0.3s ease, color 0.3s ease;
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.file-drop {
+	width: 100%;
+	height: fit-content;
+	font-weight: bold;
+	font-size: large;
+}
+.file-drop > .file-drop-target {
+	transition: border-color 0.3s ease;
+	border: 0.2em solid #f04e26;
+	border-radius: 1em;
+	text-align: center;
+	padding: 8em 0em;
+	cursor: pointer;
+}
+.hidden {
+	display: none;
+}
+.toolBar {
+	padding: 1em;
+	margin: 2em;
+	text-align: center;
+	border-radius: 1em;
+	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+		rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+.toggle {
+	background-color: rgb(185, 185, 185);
+	color: yellow;
+	height: 2em;
+	width: 2em;
+	text-align: center;
+	line-height: 2em;
+	vertical-align: middle;
+	border-radius: 100em;
+	font-size: x-large;
+	z-index: 100;
+	position: fixed;
+	bottom: 1em;
+	right: 1em;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+.toggle:hover {
+	transition: background-color 0.2s ease;
+	background-color: rgb(146, 146, 146);
+}
+/* Styling for Editing */
+.wrapper {
+	width: 60%;
+	max-width: 90%;
+	margin: auto;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+.video {
+	width: 100%;
+}
+.playback {
+	position: relative;
+	margin: 2rem 24px;
+	height: 10px;
+	background: #2f3b44;
+	border-radius: 1em;
+}
+.playback .seekable {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: rgb(240, 240, 240);
+	cursor: pointer;
+}
+.playback .grabber {
+	position: absolute;
+	width: 5px;
+	border-radius: 2px;
+	z-index: 1;
+	cursor: pointer;
+	transition: transform 0.2s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.playback .grabber.start {
+	background: green;
+	top: 0px;
+	bottom: -12px;
+}
+.playback .grabber.end {
+	background: red;
+	top: -12px;
+	bottom: 0px;
+}
+.playback .grabber:hover {
+	transform: scaleY(1.4);
+}
+.playback .progress {
+	background: blue;
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	cursor: pointer;
+	pointer-events: none;
+}
+.controls {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: space-between;
+	text-align: center;
+}
+.controls .player-controls button {
+	width: 35px;
+}
+.controls .player-controls .play-control {
+	background: white;
+	border: 1px solid black;
+	color: black;
+	padding: 0.5rem;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.controls .player-controls .play-control:hover {
+	background: lightgrey;
+}
+.controls .settings-control {
+	background: white;
+	border: 1px solid black;
+	color: black;
+	padding: 0.5rem;
+	border-radius: 5px;
+	cursor: pointer;
+}
+.controls .settings-control:hover {
+	background: lightgrey;
+}
+.controls .trim-control {
+	background: #0072cf;
+	border: 0;
+	color: #fff;
+	padding: 0.5rem;
+	border-radius: 5px;
+	cursor: pointer;
+	letter-spacing: 0.1em;
+	margin: 0em 0.3em;
+}
+.controls .trim-control:hover {
+	background: #038eff;
+}
+.evenWidth {
+	width: 130px;
+}
+.warning {
+	padding: 0.8em;
+	color: #da7f00;
+	background-color: #ffecd1;
+	border-radius: 0.3em;
+	border: 0.1em solid #f0ad4e;
+	margin: 1em;
+	justify-content: center;
+	text-align: center;
+}
+video::-webkit-media-controls-fullscreen-button {
+	display: none;
+}
+hr {
+	margin: 1rem 0;
+}
+.download_video {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: center;
+}
+.mask {
+	position: absolute;
+	border: 2px dashed red;
+	background-color: transparent;
+	width: 19vw;
+	height: 33.6vw;
+	cursor: move;
+	z-index: 1;
+}
+.none {
+	display: none;
 }
