@@ -4,7 +4,8 @@ body {
   margin: 0%;
 }
 .file-drop {
-	width: 100%;
+	width: 80%;
+  margin: 15rem auto;
 	height: fit-content;
 	font-weight: bold;
 	font-size: large;
@@ -28,9 +29,36 @@ body {
 	box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
 		rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
+.toggle {
+	background-color: rgb(185, 185, 185);
+	color: yellow;
+	height: 2em;
+	width: 2em;
+	text-align: center;
+	line-height: 2em;
+	vertical-align: middle;
+	border-radius: 100em;
+	font-size: x-large;
+	z-index: 100;
+	position: fixed;
+	bottom: 1em;
+	right: 1em;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	-webkit-touch-callout: none; /* iOS Safari */
+	-webkit-user-select: none; /* Safari */
+	-khtml-user-select: none; /* Konqueror HTML */
+	-moz-user-select: none; /* Old versions of Firefox */
+	-ms-user-select: none; /* Internet Explorer/Edge */
+	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+}
+.toggle:hover {
+	transition: background-color 0.2s ease;
+	background-color: rgb(146, 146, 146);
+}
 .wrapper {
 	width: auto;
-	margin: auto;
+	margin: 0% auto;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -41,6 +69,10 @@ body {
 }
 .video {
   margin: auto;
+}
+.mainControls {
+  width: 70%;
+  margin: 0% auto;
 }
 .playback {
 	position: relative;

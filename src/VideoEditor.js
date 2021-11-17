@@ -101,12 +101,14 @@ class VideoEditor extends React.Component {
 			let d1 = (el.end - el.start).toFixed(1).toString();
 			let d2 = el.start.toFixed(1).toString();
 			await this.ffmpeg.run(
+				"-ss",
+				d2,
 				"-i",
 				"test.mp4",
 				"-t",
 				d1,
-				"-ss",
-				d2,
+        "-vf",
+        "crop=360:640:0:0",
 				"-f",
 				"mp4",
 				`${d1}.mp4`
@@ -314,164 +316,172 @@ class VideoEditor extends React.Component {
 				>
 					<source src={this.props.videoUrl} type="video/mp4" />
 				</video>
-				<div className="playback">
-					{this.state.timings.map((x, index) => (
-						<div key={"grabber_" + index}>
-							<div
-								className="grabber start"
-								title="Start"
-								style={{
-									left: `${
-										(x.start /
-											this.playVideo.current.duration) *
-										100
-									}%`,
-								}}
-								onMouseDown={() => {
-									if (this.state.deletingGrabber) {
-										this.deleteGrabber(index);
-									} else {
-										this.setState(
-											{
-												currently_grabbed: {
-													index: index,
-													type: "start",
+				<div className="mainControls">
+					<div className="playback">
+						{this.state.timings.map((x, index) => (
+							<div key={"grabber_" + index}>
+								<div
+									className="grabber start"
+									title="Start"
+									style={{
+										left: `${
+											(x.start /
+												this.playVideo.current
+													.duration) *
+											100
+										}%`,
+									}}
+									onMouseDown={() => {
+										if (this.state.deletingGrabber) {
+											this.deleteGrabber(index);
+										} else {
+											this.setState(
+												{
+													currently_grabbed: {
+														index: index,
+														type: "start",
+													},
 												},
-											},
-											() => {
-												window.addEventListener(
-													"mousemove",
-													this.startGrabberMove
-												);
-											}
-										);
-									}
-								}}
-							></div>
-							<div
-								className="grabber end"
-								title="End"
-								style={{
-									left: `${
-										(x.end /
-											this.playVideo.current.duration) *
-										100
-									}%`,
-								}}
-								onMouseDown={(event) => {
-									if (this.state.deletingGrabber) {
-										this.deleteGrabber(index);
-									} else {
-										this.setState(
-											{
-												currently_grabbed: {
-													index: index,
-													type: "end",
+												() => {
+													window.addEventListener(
+														"mousemove",
+														this.startGrabberMove
+													);
+												}
+											);
+										}
+									}}
+								></div>
+								<div
+									className="grabber end"
+									title="End"
+									style={{
+										left: `${
+											(x.end /
+												this.playVideo.current
+													.duration) *
+											100
+										}%`,
+									}}
+									onMouseDown={(event) => {
+										if (this.state.deletingGrabber) {
+											this.deleteGrabber(index);
+										} else {
+											this.setState(
+												{
+													currently_grabbed: {
+														index: index,
+														type: "end",
+													},
 												},
-											},
-											() => {
-												window.addEventListener(
-													"mousemove",
-													this.startGrabberMove
-												);
-											}
-										);
-									}
-								}}
-							></div>
+												() => {
+													window.addEventListener(
+														"mousemove",
+														this.startGrabberMove
+													);
+												}
+											);
+										}
+									}}
+								></div>
+							</div>
+						))}
+						<div
+							className="seekable"
+							ref={this.playBackBar}
+							onClick={this.updateProgress}
+						></div>
+						<div className="progress" ref={this.progressBar}></div>
+					</div>
+					<div className="controls">
+						<div className="player-controls">
+							<button
+								className="settings-control"
+								title="Mute/Unmute Video"
+								onClick={() =>
+									this.setState({
+										isMuted: !this.state.isMuted,
+									})
+								}
+							>
+								{this.state.isMuted ? (
+									<FontAwesomeIcon icon={faVolumeMute} />
+								) : (
+									<FontAwesomeIcon icon={faVolumeUp} />
+								)}
+							</button>
 						</div>
-					))}
-					<div
-						className="seekable"
-						ref={this.playBackBar}
-						onClick={this.updateProgress}
-					></div>
-					<div className="progress" ref={this.progressBar}></div>
-				</div>
-				<div className="controls">
-					<div className="player-controls">
-						<button
-							className="settings-control"
-							title="Mute/Unmute Video"
-							onClick={() =>
-								this.setState({ isMuted: !this.state.isMuted })
-							}
-						>
-							{this.state.isMuted ? (
-								<FontAwesomeIcon icon={faVolumeMute} />
-							) : (
-								<FontAwesomeIcon icon={faVolumeUp} />
-							)}
-						</button>
+						<div className="player-controls">
+							<button
+								className="play-control"
+								title="Play/Pause"
+								onClick={this.play_pause.bind(this)}
+							>
+								{this.state.playing ? (
+									<FontAwesomeIcon icon={faPause} />
+								) : (
+									<FontAwesomeIcon icon={faPlay} />
+								)}
+							</button>
+						</div>
+						<div>
+							<button
+								title="Add grabber"
+								className="trim-control"
+								onClick={this.addGrabber}
+							>
+								ADD ||
+							</button>
+							<button
+								title="Delete grabber"
+								className="trim-control"
+								onClick={this.preDeleteGrabber}
+							>
+								DELETE ||
+							</button>
+						</div>
+						<div>
+							<button
+								title="Apply / Remove Mask"
+								className="trim-control evenWidth"
+								onClick={() =>
+									this.setState({
+										isMask: !this.state.isMask,
+									})
+								}
+							>
+								{this.state.isMask
+									? "REMOVE MASK"
+									: "APPLY MASK"}
+							</button>
+							<button
+								title="Convert Video"
+								className="trim-control evenWidth"
+								onClick={this.converter}
+							>
+								CONVERT
+							</button>
+						</div>
 					</div>
-					<div className="player-controls">
-						<button
-							className="play-control"
-							title="Play/Pause"
-							onClick={this.play_pause.bind(this)}
-						>
-							{this.state.playing ? (
-								<FontAwesomeIcon icon={faPause} />
-							) : (
-								<FontAwesomeIcon icon={faPlay} />
-							)}
-						</button>
+					<hr />
+					<div className="download_video">
+						{this.state.videoReady
+							? this.state.downloadVideo.map((e, i) => {
+									return (
+										<video
+											width="640"
+											height="360"
+											controls
+											controlsList="noplaybackrate"
+											disablePictureInPicture
+											key={"video" + i}
+										>
+											<source src={e} type="video/mp4" />
+										</video>
+									);
+							  })
+							: ""}
 					</div>
-					<div>
-						<button
-							title="Add grabber"
-							className="trim-control"
-							onClick={this.addGrabber}
-						>
-							ADD ||
-						</button>
-						<button
-							title="Delete grabber"
-							className="trim-control"
-							onClick={this.preDeleteGrabber}
-						>
-							DELETE ||
-						</button>
-					</div>
-					<div>
-						<button
-							title="Apply / Remove Mask"
-							className="trim-control evenWidth"
-							onClick={() =>
-								this.setState({
-									isMask: !this.state.isMask,
-								})
-							}
-						>
-							{this.state.isMask ? "REMOVE MASK" : "APPLY MASK"}
-						</button>
-						<button
-							title="Convert Video"
-							className="trim-control evenWidth"
-							onClick={this.converter}
-						>
-							CONVERT
-						</button>
-					</div>
-				</div>
-				<hr />
-				<div className="download_video">
-					{this.state.videoReady
-						? this.state.downloadVideo.map((e, i) => {
-								return (
-									<video
-										width="640"
-										height="360"
-										controls
-										controlsList="noplaybackrate"
-										disablePictureInPicture
-										key={"video" + i}
-									>
-										<source src={e} type="video/mp4" />
-									</video>
-								);
-						  })
-						: ""}
 				</div>
 			</div>
 		);
