@@ -108,7 +108,7 @@ class VideoEditor extends React.Component {
 				"-t",
 				d1,
         "-vf",
-        "crop=360:640:0:0",
+        "crop=360:640",
 				"-f",
 				"mp4",
 				`${d1}.mp4`

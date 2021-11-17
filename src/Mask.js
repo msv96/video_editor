@@ -7,7 +7,7 @@ function Mask() {
 	const bind = useDrag(
 		({ down, offset: [ox, oy] }) => api.start({ x: ox, y: oy, immediate: down }),
 		{
-			bounds: { left: 320, right: 1193, top: 0, bottom: 0 },
+			bounds: { left: 319, right: 1239, top: 0, bottom: 79 },
 		}
 	);
 	return (
