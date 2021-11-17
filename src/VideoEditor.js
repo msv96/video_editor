@@ -22,6 +22,7 @@ class VideoEditor extends React.Component {
 			videoReady: false,
 			downloadVideo: [],
 			isMask: false,
+			maskDimensions: { x: 0, y: 0 },
 		};
 		this.playVideo = React.createRef();
 		this.progressBar = React.createRef();
@@ -100,6 +101,8 @@ class VideoEditor extends React.Component {
 		for await (let el of this.state.timings) {
 			let d1 = (el.end - el.start).toFixed(1).toString();
 			let d2 = el.start.toFixed(1).toString();
+      let x1 = this.state.maskDimensions.x;
+      let y1 = this.state.maskDimensions.y;
 			await this.ffmpeg.run(
 				"-ss",
 				d2,
@@ -107,8 +110,8 @@ class VideoEditor extends React.Component {
 				"test.mp4",
 				"-t",
 				d1,
-        "-vf",
-        "crop=360:640",
+				"-vf",
+				`crop=360:640:${x1}:${y1}`,
 				"-f",
 				"mp4",
 				`${d1}.mp4`
@@ -306,7 +309,7 @@ class VideoEditor extends React.Component {
 	render = () => {
 		return (
 			<div className="wrapper">
-				{this.state.isMask ? <Mask /> : ""}
+				{this.state.isMask ? <Mask playVideo={this.playVideo} maskDimensions={this.state.maskDimensions} /> : ""}
 				<video
 					className="video"
 					autoload="metadata"
