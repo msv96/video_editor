@@ -1,25 +1,90 @@
 body {
 	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 	transition: background-color 0.3s ease, color 0.3s ease;
-  margin: 0%;
+	margin: 0%;
+	box-sizing: border-box;
+}
+.head {
+  text-align: center;
+  color: hsl(30, 100%, 50%);
+  font-size: 2rem;
+  margin: 3rem 0px 0px 0px;
+}
+.choose {
+	padding-top: 30vh;
+	display: flex;
+	justify-content: center;
 }
 .file-drop {
-	width: 80%;
-  margin: 15rem auto;
-	height: fit-content;
-	font-weight: bold;
-	font-size: large;
-}
-.file-drop > .file-drop-target {
-	transition: border-color 0.3s ease;
-	border: 0.2em solid #f04e26;
-	border-radius: 1em;
-	text-align: center;
-	padding: 8em 0em;
+	padding: 1rem 1.6rem;
+	font-size: 1.3rem;
+	color: white;
+	background-color: hsl(212, 100%, 60%);
+	border-radius: 5px 0px 0px 5px;
 	cursor: pointer;
+	line-height: 15px;
+  border: none;
+  letter-spacing: 1px;
+  box-shadow: 0px 8px 24px 0px hsla(212, 100%, 60%, 0.5);
 }
-.hidden {
+#plus {
+	padding: 0px 10px 0px 0px;
+}
+input[type="file"] {
 	display: none;
+}
+.dropBtn {
+  border: none;
+  border-left: 1px solid hsl(220, 100%, 80%);
+  cursor: pointer;
+	background-color: hsl(212, 100%, 60%);
+	border-radius: 0px 5px 5px 0px;
+  padding: 1rem 1.3rem;
+  height: 57px;
+  box-shadow: 0px 8px 24px 0px hsla(212, 100%, 60%, 0.5);
+}
+#down {
+  color: white;
+  font-size: 1rem;
+}
+.file-drop:hover, .dropBtn:hover {
+	background-color: hsl(212, 100%, 55%);
+}
+.dropMenus {
+  position: absolute;
+  display: none;
+}
+.dropDownMenu:hover .dropMenus {
+  display: block;
+  width: 0px;
+}
+.menus {
+  min-width: 250px;
+  position: relative;
+  top: 0;
+  left: -193px;
+  padding: 15px 0px;
+  background-color: hsl(0, 0%, 100%);
+  vertical-align: baseline;
+  cursor: pointer;
+  box-shadow: 0px 5px 5px 0px hsla(0, 0%, 50%, 0.5);
+  z-index: 10;
+}
+.menus:first-child {
+  border-radius: 5px 5px 0px 0px;
+}
+.menus:last-child {
+  border-radius: 0px 0px 5px 5px;
+}
+.menus:hover {
+  background-color: hsl(0, 0%, 95%);
+}
+.img {
+  width: 20px;
+  padding: 0px 15px 0px 50px;
+}
+.span {
+  font-size: 1.1rem;
 }
 .toolBar {
 	padding: 1em;
@@ -45,41 +110,57 @@ body {
 	right: 1em;
 	cursor: pointer;
 	transition: background-color 0.2s ease;
-	-webkit-touch-callout: none; /* iOS Safari */
-	-webkit-user-select: none; /* Safari */
-	-khtml-user-select: none; /* Konqueror HTML */
-	-moz-user-select: none; /* Old versions of Firefox */
-	-ms-user-select: none; /* Internet Explorer/Edge */
-	user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
-}
-.toggle:hover {
-	transition: background-color 0.2s ease;
-	background-color: rgb(146, 146, 146);
-}
-.wrapper {
-	width: auto;
-	margin: 0% auto;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-  text-align: center;
+}
+.toggle:hover {
+	transition: background-color 0.2s ease;
+	background-color: rgb(146, 146, 146);
+}
+.wrapper {
+	display: flex;
+	justify-content: center;
+	padding: 20vh 5vw 30px 5vw;
+  gap: 25px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	text-align: center;
 }
 .video {
-  margin: auto;
+	margin: 0 auto;
 }
 .mainControls {
-  width: 70%;
-  margin: 0% auto;
+	width: 50%;
+  padding: 2rem;
+	margin: 0% auto;
+  background-color: hsl(0, 0%, 95%);
+  border-radius: 5px;
+	transition: background-color 0.2s ease;
+  min-width: 700px;
+}
+.mainControlsDark {
+	width: 50%;
+  padding: 2rem;
+	margin: 0% auto;
+  background-color: hsl(0, 0%, 25%);
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+  min-width: 700px;
 }
 .playback {
 	position: relative;
 	margin: 2rem 24px;
 	height: 10px;
 	background: #2f3b44;
-	border-radius: 1em;
+  border-radius: 50px;
 }
 .playback .seekable {
 	position: absolute;
@@ -87,8 +168,9 @@ body {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: rgb(240, 240, 240);
+	background: hsl(0, 0%, 80%);
 	cursor: pointer;
+  border-radius: 50px;
 }
 .playback .grabber {
 	position: absolute;
@@ -115,13 +197,14 @@ body {
 	transform: scaleY(1.4);
 }
 .playback .progress {
-	background: blue;
+	background-color: blueviolet;
 	position: absolute;
 	left: 0;
 	top: 0;
 	bottom: 0;
 	cursor: pointer;
 	pointer-events: none;
+  border-radius: 50px;
 }
 .controls {
 	display: flex;
@@ -130,30 +213,27 @@ body {
 	justify-content: space-between;
 	text-align: center;
 }
-.controls .player-controls button {
-	width: 35px;
-}
 .controls .player-controls .play-control {
-	background: white;
-	border: 1px solid black;
+	background: hsl(40, 100%, 50%);
+	border: none;
 	color: black;
-	padding: 0.5rem;
+	padding: 0.5rem 2rem;
 	border-radius: 5px;
 	cursor: pointer;
 }
 .controls .player-controls .play-control:hover {
-	background: lightgrey;
+	background: hsl(40, 90%, 50%);
 }
 .controls .settings-control {
-	background: white;
-	border: 1px solid black;
+	background: hsl(40, 100%, 50%);
+	border: none;
 	color: black;
-	padding: 0.5rem;
+	padding: 0.5rem 2rem;
 	border-radius: 5px;
 	cursor: pointer;
 }
 .controls .settings-control:hover {
-	background: lightgrey;
+	background: hsl(40, 90%, 50%);
 }
 .controls .trim-control {
 	background: #0072cf;
@@ -195,15 +275,21 @@ hr {
 }
 .Main {
 	position: absolute;
-  width: 0%;
-  z-index: 1;
+	width: 0%;
+	z-index: 1;
 }
 .mask {
-  position: relative;
+	position: relative;
 	border: 2px dashed gold;
 	background-color: transparent;
 	width: 356px;
 	height: 636px;
 	cursor: move;
 	z-index: 2;
+}
+@media (max-width: 1400px) {
+	.wrapper {
+		flex-direction: column;
+    gap: 25px;
+	}
 }

@@ -1,7 +1,12 @@
 import React from "react";
 import VideoEditor from "./VideoEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSun, faMoon } from "@fortawesome/free-solid-svg-icons";
+import {
+	faSun,
+	faMoon,
+	faPlusCircle,
+	faChevronDown,
+} from "@fortawesome/free-solid-svg-icons";
 
 class App extends React.Component {
 	constructor(props) {
@@ -40,22 +45,45 @@ class App extends React.Component {
 	render = () => {
 		return (
 			<div>
+				<div className="head">Video Editor</div>
 				{this.state.isUpload ? (
-					<div className={"wrapper"}>
-						<input
-							onChange={(e) => this.upload_file(e.target.files)}
-							type="file"
-							className="hidden"
-							id="up_file"
-						/>
-						<div
-							className="file-drop"
-							onClick={() =>
-								document.getElementById("up_file").click()
-							}
-						>
-							<div className="file-drop-target">
-								Click to upload your video and edit!
+					<div className="choose">
+						<label htmlFor="up_file" className="file-drop">
+							<input
+								onChange={(e) =>
+									this.upload_file(e.target.files)
+								}
+								type="file"
+								id="up_file"
+								accept=".3gp,.flv,.mp4,.avi,.mkv,.vob"
+							/>
+							<FontAwesomeIcon icon={faPlusCircle} id="plus" />
+							Choose file
+						</label>
+						<div className="dropDownMenu">
+							<button type="submit" className="dropBtn">
+								<FontAwesomeIcon
+									icon={faChevronDown}
+									id="down"
+								/>
+							</button>
+							<div className="dropMenus">
+								<div className="menus">
+									<img
+										src="./drive.svg"
+										alt="drive"
+										className="img"
+									/>
+									<span className="span">Google Drive</span>
+								</div>
+								<div className="menus">
+									<img
+										src="./dropbox.svg"
+										alt="drive"
+										className="img"
+									/>
+									<span className="span">Dropbox</span>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -63,6 +91,7 @@ class App extends React.Component {
 					<VideoEditor
 						videoUrl={this.state.videoUrl}
 						video_file={this.state.video_file}
+						darkMode={this.state.isDarkMode}
 					/>
 				)}
 				<div className={"theme_toggler"} onClick={this.toggleThemes}>
