@@ -5,10 +5,10 @@ body {
 	box-sizing: border-box;
 }
 .head {
-  text-align: center;
-  color: hsl(30, 100%, 50%);
-  font-size: 2rem;
-  margin: 3rem 0px 0px 0px;
+	text-align: center;
+	color: hsl(30, 100%, 50%);
+	font-size: 2rem;
+	margin: 3rem 0px 0px 0px;
 }
 .choose {
 	padding-top: 30vh;
@@ -23,9 +23,9 @@ body {
 	border-radius: 5px 0px 0px 5px;
 	cursor: pointer;
 	line-height: 15px;
-  border: none;
-  letter-spacing: 1px;
-  box-shadow: 0px 8px 24px 0px hsla(212, 100%, 60%, 0.5);
+	border: none;
+	letter-spacing: 1px;
+	box-shadow: 0px 8px 24px 0px hsla(212, 100%, 60%, 0.5);
 }
 #plus {
 	padding: 0px 10px 0px 0px;
@@ -34,57 +34,58 @@ input[type="file"] {
 	display: none;
 }
 .dropBtn {
-  border: none;
-  border-left: 1px solid hsl(220, 100%, 80%);
-  cursor: pointer;
+	border: none;
+	border-left: 1px solid hsl(220, 100%, 80%);
+	cursor: pointer;
 	background-color: hsl(212, 100%, 60%);
 	border-radius: 0px 5px 5px 0px;
-  padding: 1rem 1.3rem;
-  height: 57px;
-  box-shadow: 0px 8px 24px 0px hsla(212, 100%, 60%, 0.5);
+	padding: 1rem 1.3rem;
+	height: 57px;
+	box-shadow: 0px 8px 24px 0px hsla(212, 100%, 60%, 0.5);
 }
 #down {
-  color: white;
-  font-size: 1rem;
+	color: white;
+	font-size: 1rem;
 }
-.file-drop:hover, .dropBtn:hover {
+.file-drop:hover,
+.dropBtn:hover {
 	background-color: hsl(212, 100%, 55%);
 }
 .dropMenus {
-  position: absolute;
-  display: none;
+	position: absolute;
+	display: none;
 }
 .dropDownMenu:hover .dropMenus {
-  display: block;
-  width: 0px;
+	display: block;
+	width: 0px;
 }
 .menus {
-  min-width: 250px;
-  position: relative;
-  top: 0;
-  left: -193px;
-  padding: 15px 0px;
-  background-color: hsl(0, 0%, 100%);
-  vertical-align: baseline;
-  cursor: pointer;
-  box-shadow: 0px 5px 5px 0px hsla(0, 0%, 50%, 0.5);
-  z-index: 10;
+	min-width: 250px;
+	position: relative;
+	top: 0;
+	left: -193px;
+	padding: 15px 0px;
+	background-color: hsl(0, 0%, 100%);
+	vertical-align: baseline;
+	cursor: pointer;
+	box-shadow: 0px 5px 5px 0px hsla(0, 0%, 50%, 0.5);
+	z-index: 10;
 }
 .menus:first-child {
-  border-radius: 5px 5px 0px 0px;
+	border-radius: 5px 5px 0px 0px;
 }
 .menus:last-child {
-  border-radius: 0px 0px 5px 5px;
+	border-radius: 0px 0px 5px 5px;
 }
 .menus:hover {
-  background-color: hsl(0, 0%, 95%);
+	background-color: hsl(0, 0%, 95%);
 }
 .img {
-  width: 20px;
-  padding: 0px 15px 0px 50px;
+	width: 20px;
+	padding: 0px 15px 0px 50px;
 }
 .span {
-  font-size: 1.1rem;
+	font-size: 1.1rem;
 }
 .toolBar {
 	padding: 1em;
@@ -96,7 +97,7 @@ input[type="file"] {
 }
 .toggle {
 	background-color: rgb(185, 185, 185);
-	color: yellow;
+	color: beige;
 	height: 2em;
 	width: 2em;
 	text-align: center;
@@ -120,12 +121,12 @@ input[type="file"] {
 .toggle:hover {
 	transition: background-color 0.2s ease;
 	background-color: rgb(146, 146, 146);
-}
+} 
 .wrapper {
 	display: flex;
-	justify-content: center;
-	padding: 20vh 5vw 30px 5vw;
-  gap: 25px;
+	justify-content: space-around;
+	padding: 0 4vw;
+	gap: 25px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -135,86 +136,34 @@ input[type="file"] {
 	text-align: center;
 }
 .video {
-	margin: 0 auto;
+	padding-top: 25vh;
 }
 .mainControls {
-	width: 50%;
-  padding: 2rem;
-	margin: 0% auto;
-  background-color: hsl(0, 0%, 95%);
-  border-radius: 5px;
+	margin-top: 7vh;
+	padding: 3rem;
+	background-color: hsl(0, 0%, 95%);
+	border-radius: 5px;
 	transition: background-color 0.2s ease;
-  min-width: 700px;
+	height: 65vh;
+	min-width: 750px;
 }
-.mainControlsDark {
-	width: 50%;
-  padding: 2rem;
-	margin: 0% auto;
-  background-color: hsl(0, 0%, 25%);
-  border-radius: 5px;
-  transition: background-color 0.2s ease;
-  min-width: 700px;
+.Dark {
+	background-color: hsl(0, 0%, 25%);
+	transition: background-color 0.2s ease;
 }
-.playback {
-	position: relative;
-	margin: 2rem 24px;
-	height: 10px;
-	background: #2f3b44;
-  border-radius: 50px;
-}
-.playback .seekable {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: hsl(0, 0%, 80%);
-	cursor: pointer;
-  border-radius: 50px;
-}
-.playback .grabber {
-	position: absolute;
-	width: 5px;
-	border-radius: 2px;
-	z-index: 1;
-	cursor: pointer;
-	transition: transform 0.2s ease;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.playback .grabber.start {
-	background: green;
-	top: 0px;
-	bottom: -12px;
-}
-.playback .grabber.end {
-	background: red;
-	top: -12px;
-	bottom: 0px;
-}
-.playback .grabber:hover {
-	transform: scaleY(1.4);
-}
-.playback .progress {
-	background-color: blueviolet;
-	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	cursor: pointer;
-	pointer-events: none;
-  border-radius: 50px;
+.progress {
+	margin: 1rem 0 2rem;
 }
 .controls {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
-	justify-content: space-between;
-	text-align: center;
+	gap: 20px;
+	justify-content: space-evenly;
+	align-items: center;
+	margin: 2rem 0;
 }
 .controls .player-controls .play-control {
-	background: hsl(40, 100%, 50%);
+	background-color: hsl(40, 100%, 50%);
 	border: none;
 	color: black;
 	padding: 0.5rem 2rem;
@@ -222,21 +171,35 @@ input[type="file"] {
 	cursor: pointer;
 }
 .controls .player-controls .play-control:hover {
-	background: hsl(40, 90%, 50%);
+	background-color: hsl(40, 90%, 50%);
 }
-.controls .settings-control {
-	background: hsl(40, 100%, 50%);
-	border: none;
-	color: black;
-	padding: 0.5rem 2rem;
-	border-radius: 5px;
-	cursor: pointer;
+.slider {
+	-webkit-appearance: none;
+	appearance: none;
+	outline: none;
+	width: 100%;
+	height: 10px;
+	background-color: #d3d3d3;
+  border-radius: 4px;
 }
-.controls .settings-control:hover {
-	background: hsl(40, 90%, 50%);
+.slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	background-color: white;
+	cursor: grab;
+  border-radius: 50px;
 }
-.controls .trim-control {
-	background: #0072cf;
+.slider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	background-color: white;
+	cursor: grab;
+  border-radius: 50px;
+}
+.trim-control {
+	background-color: hsl(212, 100%, 50%);
 	border: 0;
 	color: #fff;
 	padding: 0.5rem;
@@ -245,27 +208,43 @@ input[type="file"] {
 	letter-spacing: 0.1em;
 	margin: 0em 0.3em;
 }
-.controls .trim-control:hover {
-	background: #038eff;
+.trim-control:hover {
+	background-color: hsl(212, 100%, 40%);
 }
-.evenWidth {
-	width: 130px;
+.trim {
+	background-color: hsl(0, 0%, 90%);
+	border: 0;
+	color: black;
+	padding: 0.5rem;
+	border-radius: 5px;
+	cursor: pointer;
+	letter-spacing: 0.1em;
+	margin: 0em 0.3em;
 }
-.warning {
-	padding: 0.8em;
-	color: #da7f00;
-	background-color: #ffecd1;
-	border-radius: 0.3em;
-	border: 0.1em solid #f0ad4e;
-	margin: 1em;
-	justify-content: center;
-	text-align: center;
+.trim:hover {
+	background-color: grey;
 }
-video::-webkit-media-controls-fullscreen-button {
-	display: none;
+.displayTime {
+	display: flex;
+	justify-content: space-between;
+  align-items: center;
+  margin: 0.5rem 0 0 0;
 }
-hr {
-	margin: 1rem 0;
+.marginTop {
+  margin: 1rem 0;
+}
+.convert {
+	background-color: hsl(130, 50%, 50%);
+	border: none;
+	color: hsl(0, 0%, 100%);
+	padding: 0.5rem;
+	border-radius: 5px;
+	cursor: pointer;
+	letter-spacing: 0.1em;
+	margin: 0em 0.3em;
+}
+.convert:hover {
+	background-color: hsl(130, 50%, 40%);
 }
 .download_video {
 	display: flex;
@@ -273,23 +252,48 @@ hr {
 	gap: 10px;
 	justify-content: center;
 }
-.Main {
-	position: absolute;
-	width: 0%;
-	z-index: 1;
-}
-.mask {
-	position: relative;
-	border: 2px dashed gold;
-	background-color: transparent;
-	width: 356px;
-	height: 636px;
-	cursor: move;
-	z-index: 2;
-}
-@media (max-width: 1400px) {
+@media (max-width: 550px) {
 	.wrapper {
 		flex-direction: column;
-    gap: 25px;
+		justify-content: center;
+		align-items: center;
+		gap: 15px;
+	}
+	.video {
+		padding-top: 2vh;
+	}
+	.mainControls {
+		min-width: 350px;
+    height: 75vh;
+	}
+}
+@media (min-width: 551px) and (max-width: 800px) {
+	.wrapper {
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 20px;
+	}
+	.video {
+		padding-top: 5vh;
+	}
+	.mainControls {
+		min-width: 550px;
+    height: 70vh;
+	}
+}
+@media (min-width: 801px) and (max-width: 1350px) {
+	.wrapper {
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		gap: 25px;
+	}
+	.video {
+		padding-top: 10vh;
+	}
+	.mainControls {
+		min-width: 850px;
+    height: 60vh;
 	}
 }

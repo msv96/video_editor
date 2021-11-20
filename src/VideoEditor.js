@@ -7,90 +7,34 @@ import {
 	faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import Mask from "./Mask";
+import ReactPlayer from "react-player";
+import Duration from "./Duration";
+import { Range } from "rc-slider";
+import "rc-slider/assets/index.css";
 
 class VideoEditor extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			isMuted: false,
-			timings: [],
 			playing: false,
-			currently_grabbed: { index: 0, type: "none" },
-			difference: 0.2,
-			deletingGrabber: false,
+			volume: 1,
+			muted: false,
+			played: 0,
+			duration: 0,
 			videoReady: false,
 			downloadVideo: [],
-			isMask: false,
-			maskDimensions: { x: 0, y: 0 },
-			trim: false,
+			timings: [
+				{
+					start: 0,
+					end: 0,
+				},
+			],
 		};
-		this.playVideo = React.createRef();
-		this.progressBar = React.createRef();
-		this.playBackBar = React.createRef();
 	}
-
 	ffmpeg = createFFmpeg({ log: true });
-
-	loaded = async () => {
-		await this.ffmpeg.load();
-	};
-
 	componentDidMount = () => {
 		this.loaded();
-		var self = this;
-		this.playVideo.current.addEventListener("timeupdate", function () {
-			var curr_idx = self.state.currently_grabbed.index;
-			var seek =
-				((self.playVideo.current.currentTime -
-					self.state.timings[curr_idx].start) /
-					self.playVideo.current.duration) *
-				100;
-			self.progressBar.current.style.width = `${seek}%`;
-			if (
-				self.playVideo.current.currentTime >=
-				self.state.timings[self.state.timings.length - 1].end
-			) {
-				self.playVideo.current.pause();
-				self.setState({ playing: false });
-			} else if (
-				self.playVideo.current.currentTime >=
-				self.state.timings[curr_idx].end
-			) {
-				if (curr_idx + 1 < self.state.timings.length) {
-					self.setState(
-						{
-							currently_grabbed: {
-								index: curr_idx + 1,
-								type: "start",
-							},
-						},
-						() => {
-							self.progressBar.current.style.width = "0%";
-							self.progressBar.current.style.left = `${
-								(self.state.timings[curr_idx + 1].start /
-									self.playVideo.current.duration) *
-								100
-							}%`;
-							self.playVideo.current.currentTime =
-								self.state.timings[curr_idx + 1].start;
-						}
-					);
-				}
-			}
-		});
-		window.addEventListener("keyup", function (event) {
-			if (event.key === " ") {
-				self.play_pause();
-			}
-		});
-		var time = this.state.timings;
-		this.playVideo.current.onloadedmetadata = () => {
-			time.push({ start: 0, end: this.playVideo.current.duration });
-			this.setState({ timings: time });
-		};
 	};
-
 	converter = async () => {
 		this.ffmpeg.FS(
 			"writeFile",
@@ -100,16 +44,6 @@ class VideoEditor extends React.Component {
 		for await (let el of this.state.timings) {
 			let d1 = (el.end - el.start).toFixed(1).toString();
 			let d2 = el.start.toFixed(1).toString();
-			let x1 = this.state.maskDimensions.x;
-			let y1 = this.state.maskDimensions.y;
-			let f, c;
-			if (this.state.isMask) {
-				f = "-vf";
-				c = `crop=360:640:${x1}:${y1}`;
-			} else {
-				f = "";
-				c = "";
-			}
 			await this.ffmpeg.run(
 				"-ss",
 				d2,
@@ -117,8 +51,6 @@ class VideoEditor extends React.Component {
 				"test.mp4",
 				"-t",
 				d1,
-				f,
-				c,
 				"-f",
 				"mp4",
 				`${d1}.mp4`
@@ -133,275 +65,111 @@ class VideoEditor extends React.Component {
 		}
 		this.setState({ videoReady: true });
 	};
-
-	play_pause = () => {
-		var self = this;
-		if (this.state.playing) {
-			this.playVideo.current.pause();
-		} else {
-			if (
-				self.playVideo.current.currentTime >=
-				self.state.timings[self.state.timings.length - 1].end
-			) {
-				self.playVideo.current.pause();
-				self.setState(
-					{
-						playing: false,
-						currently_grabbed: { index: 0, type: "start" },
-					},
-					() => {
-						self.playVideo.current.currentTime =
-							self.state.timings[0].start;
-						self.progressBar.current.style.left = `${
-							(self.state.timings[0].start /
-								self.playVideo.current.duration) *
-							100
-						}%`;
-						self.progressBar.current.style.width = "0%";
-					}
-				);
-			}
-			this.playVideo.current.play();
-		}
+	loaded = async () => {
+		await this.ffmpeg.load();
+	};
+	handlePlayPause = () => {
 		this.setState({ playing: !this.state.playing });
 	};
-
-	updateProgress = (event) => {
-		var playbackRect = this.playBackBar.current.getBoundingClientRect();
-		var seekTime =
-			((event.clientX - playbackRect.left) / playbackRect.width) *
-			this.playVideo.current.duration;
-		this.playVideo.current.pause();
-		var index = -1;
-		var counter = 0;
-		for (let times of this.state.timings) {
-			if (seekTime >= times.start && seekTime <= times.end) {
-				index = counter;
-			}
-			counter += 1;
-		}
-		if (index === -1) {
-			return;
-		}
-		this.setState(
-			{
-				playing: true,
-				currently_grabbed: { index: index, type: "start" },
-			},
-			() => {
-				this.progressBar.current.style.width = "0%";
-				this.progressBar.current.style.left = `${
-					(this.state.timings[index].start /
-						this.playVideo.current.duration) *
-					100
-				}%`;
-				this.playVideo.current.currentTime = seekTime;
-			}
-		);
-    this.playVideo.current.play();
+	handleVolumeChange = (e) => {
+		this.setState({ volume: parseFloat(e.target.value) });
 	};
-
-	startGrabberMove = (event) => {
-		this.playVideo.current.pause();
-		var playbackRect = this.playBackBar.current.getBoundingClientRect();
-		var seekRatio =
-			(event.clientX - playbackRect.left) / playbackRect.width;
-		const index = this.state.currently_grabbed.index;
-		const type = this.state.currently_grabbed.type;
-		window.addEventListener("mouseup", () => {
-			window.removeEventListener("mousemove", this.startGrabberMove);
-		});
-		var time = this.state.timings;
-		var seek = this.playVideo.current.duration * seekRatio;
-		if (
-			type === "start" &&
-			seek >
-				(index !== 0
-					? time[index - 1].end + this.state.difference + 0.2
-					: 0) &&
-			seek < time[index].end - this.state.difference
-		) {
-			this.progressBar.current.style.left = `${seekRatio * 100}%`;
-			this.playVideo.current.currentTime = seek;
-			time[index]["start"] = seek;
-			this.setState({ timings: time, playing: false });
-		} else if (
-			type === "end" &&
-			seek > time[index].start + this.state.difference &&
-			seek <
-				(index !== this.state.timings.length - 1
-					? time[index + 1].start - this.state.difference - 0.2
-					: this.playVideo.current.duration)
-		) {
-			this.progressBar.current.style.left = `${
-				(time[index].start / this.playVideo.current.duration) * 100
-			}%`;
-			this.playVideo.current.currentTime = time[index].start;
-			time[index]["end"] = seek;
-			this.setState({ timings: time, playing: false });
-		}
-		this.progressBar.current.style.width = "0%";
+	handleToggleMuted = () => {
+		this.setState({ muted: !this.state.muted });
 	};
-
-	addGrabber = () => {
-		var time = this.state.timings;
-		var end = time[time.length - 1].end + this.state.difference;
-		this.setState({ deletingGrabber: false });
-		if (end >= this.playVideo.current.duration) {
-			return;
-		}
-		time.push({ start: end + 0.2, end: this.playVideo.current.duration });
-		this.setState({ timings: time });
+	handlePlay = () => {
+		this.setState({ playing: true });
 	};
-
-	preDeleteGrabber = () => {
-		if (this.state.deletingGrabber) {
-			this.setState({ deletingGrabber: false });
-		} else {
-			this.setState({ deletingGrabber: true });
-		}
+	handlePause = () => {
+		this.setState({ playing: false });
 	};
-
-	deleteGrabber = (index) => {
-		var time = this.state.timings;
+	handleSeekMouseDown = (e) => {
+		this.setState({ seeking: true });
+		this.player.seekTo(parseFloat(e.target.value));
+	};
+	handleSeekChange = (e) => {
+		this.setState({ played: parseFloat(e.target.value) });
+	};
+	handleSeekMouseUp = (e) => {
+		this.setState({ seeking: false });
+		this.player.seekTo(parseFloat(e.target.value));
+	};
+	handleProgress = (state) => {
+		this.setState(state);
+	};
+	handleDuration = (duration) => {
+		this.setState({ duration });
+	};
+	ref = (player) => {
+		this.player = player;
+	};
+	new = (e) => {
 		this.setState({
-			timings: time,
-			deletingGrabber: false,
-			currently_grabbed: { index: 0, type: "start" },
+			timings: [
+				{
+					start: (e[0] * this.state.duration) / 100,
+					end: (e[1] * this.state.duration) / 100,
+				},
+			],
 		});
-		if (time.length === 1) {
-			return;
-		}
-		time.splice(index, 1);
-		this.progressBar.current.style.left = `${
-			(time[0].start / this.playVideo.current.duration) * 100
-		}%`;
-		this.playVideo.current.currentTime = time[0].start;
-		this.progressBar.current.style.width = "0%";
 	};
 
 	render = () => {
 		return (
 			<>
 				<div className="wrapper">
-					{this.state.isMask ? (
-						<Mask
-							playVideo={this.playVideo}
-							maskDimensions={this.state.maskDimensions}
-						/>
-					) : (
-						""
-					)}
-					<div className="videoDiv">
-						<video
-							width="640"
-							height="360"
-							className="video"
-							autoload="metadata"
-							muted={this.state.isMuted}
-							ref={this.playVideo}
-							onClick={this.play_pause.bind(this)}
-						>
-							<source
-								src={this.props.videoUrl}
-								type="video/mp4"
+					<ReactPlayer
+						className="video"
+						ref={this.ref}
+						url={this.props.videoUrl}
+						playing={this.state.playing}
+						volume={this.state.volume}
+						muted={this.state.muted}
+						onPlay={this.handlePlay}
+						onPause={this.handlePause}
+						onClick={this.handlePlayPause}
+						onProgress={this.handleProgress}
+						onDuration={this.handleDuration}
+					/>
+					<div
+						className={
+							this.props.darkMode
+								? "mainControls"
+								: "mainControls Dark"
+						}
+					>
+						<div className="progress">
+							<input
+								className="slider"
+								type="range"
+								min={0}
+								max={0.999999}
+								step="any"
+								value={this.state.played}
+								onMouseDown={this.handleSeekMouseDown}
+								onChange={this.handleSeekChange}
+								onMouseUp={this.handleSeekMouseUp}
 							/>
-						</video>
-					</div>
-					<div className={this.props.darkMode ? "mainControls" : "mainControlsDark"}>
-						<div className="playback">
-							<>
-								{/*{this.state.timings.map((x, index) => (
-									<div key={"grabber_" + index}>
-										<div
-											className="grabber start"
-											title="Start"
-											style={{
-												left: `${
-													(x.start /
-														this.playVideo.current
-															.duration) *
-													100
-												}%`,
-											}}
-											onMouseDown={() => {
-												if (
-													this.state.deletingGrabber
-												) {
-													this.deleteGrabber(index);
-												} else {
-													this.setState(
-														{
-															currently_grabbed: {
-																index: index,
-																type: "start",
-															},
-														},
-														() => {
-															window.addEventListener(
-																"mousemove",
-																this
-																	.startGrabberMove
-															);
-														}
-													);
-												}
-											}}
-										></div>
-										<div
-											className="grabber end"
-											title="End"
-											style={{
-												left: `${
-													(x.end /
-														this.playVideo.current
-															.duration) *
-													100
-												}%`,
-											}}
-											onMouseDown={(event) => {
-												if (
-													this.state.deletingGrabber
-												) {
-													this.deleteGrabber(index);
-												} else {
-													this.setState(
-														{
-															currently_grabbed: {
-																index: index,
-																type: "end",
-															},
-														},
-														() => {
-															window.addEventListener(
-																"mousemove",
-																this
-																	.startGrabberMove
-															);
-														}
-													);
-												}
-											}}
-										></div>
-									</div>
-								))}*/}
-							</>
-							<div
-								className="seekable"
-								ref={this.playBackBar}
-								onClick={this.updateProgress}
-							></div>
-							<div
-								className="progress"
-								ref={this.progressBar}
-							></div>
+							<div className="displayTime">
+								<span className="time">
+									<Duration
+										seconds={
+											this.state.duration *
+											this.state.played
+										}
+									/>
+								</span>
+								<span className="time">
+									<Duration seconds={this.state.duration} />
+								</span>
+							</div>
 						</div>
 						<div className="controls">
 							<div className="player-controls">
 								<button
 									className="play-control"
 									title="Play/Pause"
-									onClick={this.play_pause.bind(this)}
+									onClick={this.handlePlayPause}
 								>
 									{this.state.playing ? (
 										<FontAwesomeIcon icon={faPause} />
@@ -412,15 +180,11 @@ class VideoEditor extends React.Component {
 							</div>
 							<div className="player-controls">
 								<button
-									className="settings-control"
+									className="play-control"
 									title="Mute/Unmute Video"
-									onClick={() =>
-										this.setState({
-											isMuted: !this.state.isMuted,
-										})
-									}
+									onClick={this.handleToggleMuted}
 								>
-									{this.state.isMuted ? (
+									{this.state.muted ? (
 										<FontAwesomeIcon icon={faVolumeMute} />
 									) : (
 										<FontAwesomeIcon icon={faVolumeUp} />
@@ -428,55 +192,74 @@ class VideoEditor extends React.Component {
 								</button>
 							</div>
 							<div>
-								<button
-									title="Add grabber"
-									className="trim-control"
-									onClick={this.addGrabber}
-								>
-									ADD ||
-								</button>
-								<button
-									title="Delete grabber"
-									className="trim-control"
-									onClick={this.preDeleteGrabber}
-								>
-									DELETE ||
-								</button>
+								<label htmlFor="volume">Volume</label>
+								<input
+									id="volume"
+									type="range"
+									min={0}
+									max={1}
+									step="any"
+									value={this.state.volume}
+									onChange={this.handleVolumeChange}
+									onProgress={this.handleProgress}
+								/>
 							</div>
 							<div>
-								<button
-									title="Apply / Remove Mask"
-									className="trim-control evenWidth"
-									// onClick={() =>
-									// 	this.setState({
-									// 		isMask: !this.state.isMask,
-									// 	})
-									// }
-								>
-									{this.state.isMask
-										? "REMOVE MASK"
-										: "APPLY MASK"}
-								</button>
-								<button
-									title="Trim Video"
-									className="trim-control evenWidth"
-									onClick={() =>
-										this.setState({
-											trim: !this.state.trim,
-										})
-									}
-								>
-									{this.state.trim ? "CANCEL" : "TRIM"}
+								<button title="Add" className="trim-control">
+									ADD CLIP
 								</button>
 							</div>
 							<div>
 								<button
 									title="Convert Video"
-									className="trim-control evenWidth"
+									className="convert"
 									onClick={this.converter}
 								>
-									CONVERT
+									CUT VIDEO
 								</button>
+							</div>
+						</div>
+						<div className="multipleClips">
+							<div style={{ width: "100%", height: 50 }}>
+								<Range
+									allowCross={false}
+									defaultValue={[10, 20]}
+									pushable={1}
+									railStyle={{
+										backgroundColor: "lightgrey",
+										borderRadius: "0px",
+										height: "10px",
+									}}
+									trackStyle={[
+										{
+											backgroundColor: "red",
+											borderRadius: "0px",
+											height: "10px",
+										},
+									]}
+									handleStyle={[
+										{
+											backgroundColor: "white",
+											border: "none",
+											height: "20px",
+											width: "20px",
+											boxShadow: "none",
+										},
+										{
+											backgroundColor: "white",
+											border: "none",
+											height: "20px",
+											width: "20px",
+											boxShadow: "none",
+										},
+									]}
+									onChange={(e) => this.new(e)}
+								/>
+								<div className="displayTime marginTop">
+									<button title="Delete" className="trim">
+										DELETE CLIP
+									</button>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -486,8 +269,8 @@ class VideoEditor extends React.Component {
 						{this.state.downloadVideo.map((e, i) => {
 							return (
 								<video
-									width="640"
-									height="360"
+									width="480"
+									height="270"
 									controls
 									controlsList="noplaybackrate"
 									disablePictureInPicture
