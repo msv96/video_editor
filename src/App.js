@@ -14,7 +14,7 @@ class App extends React.Component {
 		this.state = {
 			isUpload: true,
 			videoUrl: "",
-			isDarkMode: false,
+			isDarkMode: true,
 			video_file: undefined,
 		};
 	}
@@ -25,11 +25,11 @@ class App extends React.Component {
 
 	toggleThemes = () => {
 		if (this.state.isDarkMode) {
-			document.body.style.backgroundColor = "#1f242a";
-			document.body.style.color = "#fff";
-		} else {
 			document.body.style.backgroundColor = "#fff";
 			document.body.style.color = "#1f242a";
+		} else {
+			document.body.style.backgroundColor = "#1f242a";
+			document.body.style.color = "#fff";
 		}
 		this.setState({ isDarkMode: !this.state.isDarkMode });
 	};
@@ -97,11 +97,11 @@ class App extends React.Component {
 				<div className={"theme_toggler"} onClick={this.toggleThemes}>
 					{this.state.isDarkMode ? (
 						<i className="toggle" aria-hidden="true">
-							<FontAwesomeIcon icon={faSun} />
+							<FontAwesomeIcon icon={faMoon} />
 						</i>
 					) : (
 						<i className="toggle">
-							<FontAwesomeIcon icon={faMoon} />
+							<FontAwesomeIcon icon={faSun} />
 						</i>
 					)}
 				</div>

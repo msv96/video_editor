@@ -8,27 +8,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 import ReactPlayer from "react-player";
-import Duration from "./Duration";
-import { Range } from "rc-slider";
 import "rc-slider/assets/index.css";
+import DownloadVideo from "./DownloadVideo";
+import Cutclips from "./Cutclips";
 
 class VideoEditor extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			playing: false,
-			volume: 1,
 			muted: false,
 			played: 0,
 			duration: 0,
 			videoReady: false,
 			downloadVideo: [],
-			timings: [
-				{
-					start: 0,
-					end: 0,
-				},
-			],
+			timings: [],
 		};
 	}
 	ffmpeg = createFFmpeg({ log: true });
@@ -42,8 +36,12 @@ class VideoEditor extends React.Component {
 			await fetchFile(this.props.video_file[0])
 		);
 		for await (let el of this.state.timings) {
-			let d1 = (el.end - el.start).toFixed(1).toString();
-			let d2 = el.start.toFixed(1).toString();
+			let d1 = (((el.end - el.start) / 100) * this.state.duration)
+				.toFixed(1)
+				.toString();
+			let d2 = ((el.start / 100) * this.state.duration)
+				.toFixed(1)
+				.toString();
 			await this.ffmpeg.run(
 				"-ss",
 				d2,
@@ -103,17 +101,45 @@ class VideoEditor extends React.Component {
 	ref = (player) => {
 		this.player = player;
 	};
-	new = (e) => {
-		this.setState({
-			timings: [
-				{
-					start: (e[0] * this.state.duration) / 100,
-					end: (e[1] * this.state.duration) / 100,
-				},
-			],
-		});
+	clips = () => {
+		let random = Math.floor(Math.random() * 10000);
+		if (this.state.timings.length === 0) {
+			this.setState({
+				timings: [
+					{
+						id: random,
+						start: 0,
+						end: 0,
+					},
+				],
+			});
+		} else {
+			this.setState({
+				timings: [
+					...this.state.timings,
+					{
+						id: random,
+						start: 0,
+						end: 0,
+					},
+				],
+			});
+		}
 	};
-
+	Duration = (seconds) => {
+		const date = new Date(seconds * 1000);
+		const hh = date.getUTCHours();
+		const mm = date.getUTCMinutes();
+		const ss = ("0" + date.getUTCSeconds()).slice(-2);
+		if (hh) {
+			return `${hh}:${("0" + mm).slice(-2)}:${ss}`;
+		}
+		return `${mm}:${ss}`;
+	};
+	remove = (id) => {
+		let filtered = this.state.timings.filter((e) => e.id !== id);
+		this.setState({ timings: filtered });
+	};
 	render = () => {
 		return (
 			<>
@@ -123,7 +149,6 @@ class VideoEditor extends React.Component {
 						ref={this.ref}
 						url={this.props.videoUrl}
 						playing={this.state.playing}
-						volume={this.state.volume}
 						muted={this.state.muted}
 						onPlay={this.handlePlay}
 						onPause={this.handlePause}
@@ -134,13 +159,12 @@ class VideoEditor extends React.Component {
 					<div
 						className={
 							this.props.darkMode
-								? "mainControls"
-								: "mainControls Dark"
+								? "mainControls Dark"
+								: "mainControls"
 						}
 					>
 						<div className="progress">
 							<input
-								className="slider"
 								type="range"
 								min={0}
 								max={0.999999}
@@ -151,16 +175,13 @@ class VideoEditor extends React.Component {
 								onMouseUp={this.handleSeekMouseUp}
 							/>
 							<div className="displayTime">
-								<span className="time">
-									<Duration
-										seconds={
-											this.state.duration *
-											this.state.played
-										}
-									/>
+								<span>
+									{this.Duration(
+										this.state.duration * this.state.played
+									)}
 								</span>
-								<span className="time">
-									<Duration seconds={this.state.duration} />
+								<span>
+									{this.Duration(this.state.duration)}
 								</span>
 							</div>
 						</div>
@@ -177,8 +198,6 @@ class VideoEditor extends React.Component {
 										<FontAwesomeIcon icon={faPlay} />
 									)}
 								</button>
-							</div>
-							<div className="player-controls">
 								<button
 									className="play-control"
 									title="Mute/Unmute Video"
@@ -191,25 +210,14 @@ class VideoEditor extends React.Component {
 									)}
 								</button>
 							</div>
-							<div>
-								<label htmlFor="volume">Volume</label>
-								<input
-									id="volume"
-									type="range"
-									min={0}
-									max={1}
-									step="any"
-									value={this.state.volume}
-									onChange={this.handleVolumeChange}
-									onProgress={this.handleProgress}
-								/>
-							</div>
-							<div>
-								<button title="Add" className="trim-control">
+							<div className="cutVideo">
+								<button
+									title="Add"
+									className="trim-control"
+									onClick={this.clips}
+								>
 									ADD CLIP
 								</button>
-							</div>
-							<div>
 								<button
 									title="Convert Video"
 									className="convert"
@@ -220,67 +228,26 @@ class VideoEditor extends React.Component {
 							</div>
 						</div>
 						<div className="multipleClips">
-							<div style={{ width: "100%", height: 50 }}>
-								<Range
-									allowCross={false}
-									defaultValue={[10, 20]}
-									pushable={1}
-									railStyle={{
-										backgroundColor: "lightgrey",
-										borderRadius: "0px",
-										height: "10px",
-									}}
-									trackStyle={[
-										{
-											backgroundColor: "red",
-											borderRadius: "0px",
-											height: "10px",
-										},
-									]}
-									handleStyle={[
-										{
-											backgroundColor: "white",
-											border: "none",
-											height: "20px",
-											width: "20px",
-											boxShadow: "none",
-										},
-										{
-											backgroundColor: "white",
-											border: "none",
-											height: "20px",
-											width: "20px",
-											boxShadow: "none",
-										},
-									]}
-									onChange={(e) => this.new(e)}
-								/>
-								<div className="displayTime marginTop">
-									<button title="Delete" className="trim">
-										DELETE CLIP
-									</button>
-								</div>
-							</div>
+							{this.state.timings.length === 0
+								? ""
+								: this.state.timings.map((el) => {
+										return (
+											<Cutclips
+												key={el.id + "_clip"}
+												id={el.id}
+												start={el.start}
+												end={el.end}
+												duration={this.state.duration}
+												timings={this.state.timings}
+												remove={this.remove.bind(this)}
+											/>
+										);
+								  })}
 						</div>
 					</div>
 				</div>
 				{this.state.videoReady ? (
-					<div className="download_video">
-						{this.state.downloadVideo.map((e, i) => {
-							return (
-								<video
-									width="480"
-									height="270"
-									controls
-									controlsList="noplaybackrate"
-									disablePictureInPicture
-									key={"video" + i}
-								>
-									<source src={e} type="video/mp4" />
-								</video>
-							);
-						})}
-					</div>
+					<DownloadVideo downloadVideo={this.state.downloadVideo} />
 				) : (
 					""
 				)}
