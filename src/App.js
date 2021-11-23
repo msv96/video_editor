@@ -1,5 +1,6 @@
 import React from "react";
 import VideoEditor from "./VideoEditor";
+import CropEditor from "./CropEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faSun,
@@ -16,6 +17,8 @@ class App extends React.Component {
 			videoUrl: "",
 			isDarkMode: true,
 			video_file: undefined,
+			mask: undefined,
+			main: true,
 		};
 	}
 
@@ -39,6 +42,20 @@ class App extends React.Component {
 			isUpload: false,
 			videoUrl: window.URL.createObjectURL(fileInput[0]),
 			video_file: fileInput,
+		});
+	};
+
+	crop = () => {
+		this.setState({
+			mask: true,
+			main: false,
+		});
+	};
+
+	trim = () => {
+		this.setState({
+			mask: false,
+			main: false,
 		});
 	};
 
@@ -87,6 +104,20 @@ class App extends React.Component {
 							</div>
 						</div>
 					</div>
+				) : this.state.main ? (
+					<div className="flexBox">
+						<button type="submit" onClick={this.crop} className="btn">
+							Crop Video
+						</button>
+						<button type="submit" onClick={this.trim} className="btn">
+							Trim Video
+						</button>
+					</div>
+				) : this.state.mask ? (
+					<CropEditor
+						videoUrl={this.state.videoUrl}
+						video_file={this.state.video_file}
+					/>
 				) : (
 					<VideoEditor
 						videoUrl={this.state.videoUrl}

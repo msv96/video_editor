@@ -212,7 +212,7 @@ class VideoEditor extends React.Component {
 							</div>
 							<div className="cutVideo">
 								<button
-									title="Add"
+									title="Add Clips"
 									className="trim-control"
 									onClick={this.clips}
 								>
