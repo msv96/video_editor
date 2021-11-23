@@ -9,6 +9,7 @@ import {
 	faPlay,
 } from "@fortawesome/free-solid-svg-icons";
 import DownloadVideo from "./DownloadVideo";
+import { Rnd } from "react-rnd";
 
 class CropEditor extends React.Component {
 	constructor(props) {
@@ -21,13 +22,12 @@ class CropEditor extends React.Component {
 			duration: 0,
 			videoReady: false,
 			downloadVideo: [],
-			resolution: {
-				cx: 0,
-				cy: 0,
-				x: 0,
-				y: 0,
-			},
+			cx: 0,
+			cy: 0,
+			x: 0,
+			y: 0,
 		};
+		this.mains = React.createRef();
 	}
 	ffmpeg = createFFmpeg({ log: true });
 	componentDidMount = () => {
@@ -41,10 +41,10 @@ class CropEditor extends React.Component {
 		);
 		// let d = this.state.duration.toFixed(1).toString();
 		let d = "5.0";
-		let cx = this.state.resolution.cx;
-		let cy = this.state.resolution.cy;
-		let x = this.state.resolution.x;
-		let y = this.state.resolution.y;
+		let cx = this.state.cx * 2;
+		let cy = this.state.cy * 2;
+		let x = this.state.x;
+		let y = this.state.y;
 		await this.ffmpeg.run(
 			"-ss",
 			"0.0",
@@ -114,6 +114,15 @@ class CropEditor extends React.Component {
 			isMask: !this.state.isMask,
 		});
 	};
+	mainref = () => {
+		this.setState({
+			cx: this.mains.current.offsetWidth,
+			cy: this.mains.current.offsetHeight,
+		});
+	};
+  resize = (e) => {
+    console.log(e);
+  }
 	render() {
 		return (
 			<>
@@ -127,11 +136,24 @@ class CropEditor extends React.Component {
 							muted={this.state.muted}
 							onProgress={this.handleProgress}
 							onDuration={this.handleDuration}
-              onReady={(e) => console.log(e)}
 						/>
 						{this.state.isMask ? (
 							<div className="bgHide">
-								<div className="mask"></div>
+								<Rnd
+                  bounds=".video1"
+                  style={{
+                    border: "1px solid yellow",
+                    boxShadow: "0 0 0 1999px hsla(0, 0%, 0%, 0.6)",
+                  }}
+									default={{
+										x: 150,
+										y: 150,
+										width: 320,
+										height: 180,
+									}}
+                  onResizeStop={this.resize}
+                  onDragStop={this.resize}
+								/>
 							</div>
 						) : (
 							""
