@@ -19,6 +19,8 @@ class App extends React.Component {
 			video_file: undefined,
 			mask: undefined,
 			main: true,
+			width: 0,
+			height: 0,
 		};
 	}
 
@@ -39,10 +41,18 @@ class App extends React.Component {
 
 	upload_file = (fileInput) => {
 		this.setState({
-			isUpload: false,
 			videoUrl: window.URL.createObjectURL(fileInput[0]),
 			video_file: fileInput,
 		});
+		const $video = document.createElement("video");
+		$video.src = window.URL.createObjectURL(fileInput[0]);
+		$video.onloadedmetadata = () => {
+			this.setState({
+				isUpload: false,
+				width: $video.videoWidth,
+				height: $video.videoHeight,
+			});
+		};
 	};
 
 	crop = () => {
@@ -106,10 +116,18 @@ class App extends React.Component {
 					</div>
 				) : this.state.main ? (
 					<div className="flexBox">
-						<button type="submit" onClick={this.crop} className="btn">
+						<button
+							type="submit"
+							onClick={this.crop}
+							className="btn"
+						>
 							Crop Video
 						</button>
-						<button type="submit" onClick={this.trim} className="btn">
+						<button
+							type="submit"
+							onClick={this.trim}
+							className="btn"
+						>
 							Trim Video
 						</button>
 					</div>
@@ -117,12 +135,16 @@ class App extends React.Component {
 					<CropEditor
 						videoUrl={this.state.videoUrl}
 						video_file={this.state.video_file}
+            width={this.state.width}
+            height={this.state.height}
 					/>
 				) : (
 					<VideoEditor
 						videoUrl={this.state.videoUrl}
 						video_file={this.state.video_file}
 						darkMode={this.state.isDarkMode}
+            width={this.state.width}
+            height={this.state.height}
 					/>
 				)}
 				<div className={"theme_toggler"} onClick={this.toggleThemes}>

@@ -26,12 +26,18 @@ class CropEditor extends React.Component {
 			cy: 0,
 			x: 0,
 			y: 0,
+      res: {},
 		};
 		this.mains = React.createRef();
 	}
 	ffmpeg = createFFmpeg({ log: true });
 	componentDidMount = () => {
 		this.loaded();
+    let resol = this.mains.current.getBoundingClientRect();
+    this.setState({
+      res: resol
+    })
+    console.log(this.props.width, this.props.height);
 	};
 	converter = async () => {
 		this.ffmpeg.FS(
@@ -73,9 +79,6 @@ class CropEditor extends React.Component {
 	handlePlayPause = () => {
 		this.setState({ playing: !this.state.playing });
 	};
-	handleVolumeChange = (e) => {
-		this.setState({ volume: parseFloat(e.target.value) });
-	};
 	handleToggleMuted = () => {
 		this.setState({ muted: !this.state.muted });
 	};
@@ -101,34 +104,31 @@ class CropEditor extends React.Component {
 	};
 	Duration = (seconds) => {
 		const date = new Date(seconds * 1000);
-		const hh = date.getUTCHours();
-		const mm = date.getUTCMinutes();
+		const hh = ("0" + date.getUTCHours()).slice(-2);
+		const mm = ("0" + date.getUTCMinutes()).slice(-2);
 		const ss = ("0" + date.getUTCSeconds()).slice(-2);
-		if (hh) {
-			return `${hh}:${("0" + mm).slice(-2)}:${ss}`;
-		}
-		return `${mm}:${ss}`;
+		return `${hh}:${mm}:${ss}`;
 	};
 	masks = () => {
 		this.setState({
 			isMask: !this.state.isMask,
 		});
 	};
-	mainref = () => {
-		this.setState({
-			cx: this.mains.current.offsetWidth,
-			cy: this.mains.current.offsetHeight,
-		});
-	};
   resize = (e) => {
     console.log(e);
+  }
+  video = () => {
+    console.log(this.mains.current.getBoundingClientRect());
+    console.log(this.mains.current.duration);
+    console.log(this.mains.current.height);
+    console.log(this.mains.current.width);
   }
 	render() {
 		return (
 			<>
 				<div className="crop">
 					<div className="video1">
-						<ReactPlayer
+						{/* <ReactPlayer
 							className="vid"
 							ref={this.ref}
 							url={this.props.videoUrl}
@@ -136,23 +136,27 @@ class CropEditor extends React.Component {
 							muted={this.state.muted}
 							onProgress={this.handleProgress}
 							onDuration={this.handleDuration}
-						/>
+						/> */}
+            <video ref={this.mains} className="vide" controls width="640" height="360" muted={this.state.muted}>
+              <source src={this.props.videoUrl} type="video/mp4" />
+            </video>
 						{this.state.isMask ? (
 							<div className="bgHide">
 								<Rnd
-                  bounds=".video1"
+                  bounds=".vide"
                   style={{
                     border: "1px solid yellow",
                     boxShadow: "0 0 0 1999px hsla(0, 0%, 0%, 0.6)",
                   }}
 									default={{
-										x: 150,
-										y: 150,
-										width: 320,
-										height: 180,
+										x: 0,
+										y: 0,
+										width: 180,
+										height: 320,
 									}}
                   onResizeStop={this.resize}
                   onDragStop={this.resize}
+                  lockAspectRatio={9/16}
 								/>
 							</div>
 						) : (
@@ -164,7 +168,7 @@ class CropEditor extends React.Component {
 							type="range"
 							min={0}
 							max={0.999999}
-							step="any"
+							step={0.01}
 							value={this.state.played}
 							onMouseDown={this.handleSeekMouseDown}
 							onChange={this.handleSeekChange}
@@ -179,6 +183,7 @@ class CropEditor extends React.Component {
 							<span>{this.Duration(this.state.duration)}</span>
 						</div>
 					</div>
+          <button onClick={this.video}>click</button> 
 					<div className="controls wrap">
 						<div className="player-controls">
 							<button

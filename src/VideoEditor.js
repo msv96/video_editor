@@ -23,6 +23,8 @@ class VideoEditor extends React.Component {
 			videoReady: false,
 			downloadVideo: [],
 			timings: [],
+			start: 0,
+			end: 0,
 		};
 	}
 	ffmpeg = createFFmpeg({ log: true });
@@ -60,6 +62,42 @@ class VideoEditor extends React.Component {
 			this.setState({
 				downloadVideo: [...this.state.downloadVideo, video_url],
 			});
+		}
+		this.setState({ videoReady: true });
+	};
+	exportOne = async (id) => {
+		this.ffmpeg.FS(
+			"writeFile",
+			"test.mp4",
+			await fetchFile(this.props.video_file[0])
+		);
+		for await (let el of this.state.timings) {
+			if (id === el.id) {
+				let d1 = (((el.end - el.start) / 100) * this.state.duration)
+					.toFixed(1)
+					.toString();
+				let d2 = ((el.start / 100) * this.state.duration)
+					.toFixed(1)
+					.toString();
+				await this.ffmpeg.run(
+					"-ss",
+					d2,
+					"-i",
+					"test.mp4",
+					"-t",
+					d1,
+					"-f",
+					"mp4",
+					`${d1}.mp4`
+				);
+				const output_video = this.ffmpeg.FS("readFile", `${d1}.mp4`);
+				const video_url = URL.createObjectURL(
+					new Blob([output_video.buffer], { type: "video/mp4" })
+				);
+				this.setState({
+					downloadVideo: [...this.state.downloadVideo, video_url],
+				});
+			}
 		}
 		this.setState({ videoReady: true });
 	};
@@ -108,8 +146,8 @@ class VideoEditor extends React.Component {
 				timings: [
 					{
 						id: random,
-						start: 0,
-						end: 0,
+						start: this.state.start,
+						end: this.state.end,
 					},
 				],
 			});
@@ -119,8 +157,8 @@ class VideoEditor extends React.Component {
 					...this.state.timings,
 					{
 						id: random,
-						start: 0,
-						end: 0,
+						start: this.state.start,
+						end: this.state.end,
 					},
 				],
 			});
@@ -128,18 +166,34 @@ class VideoEditor extends React.Component {
 	};
 	Duration = (seconds) => {
 		const date = new Date(seconds * 1000);
-		const hh = date.getUTCHours();
-		const mm = date.getUTCMinutes();
+		const hh = ("0" + date.getUTCHours()).slice(-2);
+		const mm = ("0" + date.getUTCMinutes()).slice(-2);
 		const ss = ("0" + date.getUTCSeconds()).slice(-2);
-		if (hh) {
-			return `${hh}:${("0" + mm).slice(-2)}:${ss}`;
-		}
-		return `${mm}:${ss}`;
+		return `${hh}:${mm}:${ss}`;
 	};
 	remove = (id) => {
 		let filtered = this.state.timings.filter((e) => e.id !== id);
 		this.setState({ timings: filtered });
 	};
+	start = () => {
+		this.setState({
+			start: this.state.played * 100,
+			playing: true,
+		});
+	};
+	end = () => {
+		this.setState({
+			end: this.state.played * 100,
+			playing: false,
+		});
+	};
+  handleOne = (id) => {
+    let one = this.state.timings.filter((e) => e.id === id);
+    this.setState({
+      played: one[0].start / 100,
+      playing: !this.state.playing,
+    })
+  }
 	render = () => {
 		return (
 			<>
@@ -210,11 +264,28 @@ class VideoEditor extends React.Component {
 									)}
 								</button>
 							</div>
+							<div>
+								<button
+									title="Start Clipping"
+									className="clipBtn"
+									onClick={this.start}
+								>
+									START REC
+								</button>
+								<button
+									title="Stop Clipping"
+									className="clipBtn"
+									onClick={this.end}
+								>
+									STOP REC
+								</button>
+							</div>
 							<div className="cutVideo">
 								<button
 									title="Add Clips"
 									className="trim-control"
 									onClick={this.clips}
+                  disabled={this.state.end === 0}
 								>
 									ADD CLIP
 								</button>
@@ -223,7 +294,7 @@ class VideoEditor extends React.Component {
 									className="convert"
 									onClick={this.converter}
 								>
-									CUT VIDEO
+									EXPORT ALL
 								</button>
 							</div>
 						</div>
@@ -238,8 +309,11 @@ class VideoEditor extends React.Component {
 												start={el.start}
 												end={el.end}
 												duration={this.state.duration}
+												playing={this.state.playing}
 												timings={this.state.timings}
 												remove={this.remove.bind(this)}
+                        exportOne={this.exportOne.bind(this)}
+                        handleOne={this.handleOne.bind(this)}
 											/>
 										);
 								  })}
