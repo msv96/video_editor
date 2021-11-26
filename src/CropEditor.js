@@ -1,6 +1,5 @@
 import React from "react";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-import ReactPlayer from "react-player";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
 	faVolumeMute,
@@ -10,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import DownloadVideo from "./DownloadVideo";
 import { Rnd } from "react-rnd";
+import ReactPlayer from "react-player";
 
 class CropEditor extends React.Component {
 	constructor(props) {
@@ -26,31 +26,37 @@ class CropEditor extends React.Component {
 			cy: 0,
 			x: 0,
 			y: 0,
-      res: {},
+			width: 640,
+			height: 360,
+			defaultWidth: 180,
+			defaultHeight: 320,
+			fx: 0,
+			fy: 0,
+			isConverting: false,
 		};
-		this.mains = React.createRef();
 	}
 	ffmpeg = createFFmpeg({ log: true });
 	componentDidMount = () => {
 		this.loaded();
-    let resol = this.mains.current.getBoundingClientRect();
-    this.setState({
-      res: resol
-    })
-    console.log(this.props.width, this.props.height);
+		this.setState({
+			cx: this.state.defaultWidth,
+			cy: this.state.defaultHeight,
+			fx: this.props.width / this.state.width,
+			fy: this.props.height / this.state.height,
+		});
 	};
 	converter = async () => {
+		this.setState({ isConverting: true });
 		this.ffmpeg.FS(
 			"writeFile",
 			"test.mp4",
 			await fetchFile(this.props.video_file[0])
 		);
-		// let d = this.state.duration.toFixed(1).toString();
-		let d = "5.0";
-		let cx = this.state.cx * 2;
-		let cy = this.state.cy * 2;
-		let x = this.state.x;
-		let y = this.state.y;
+		let d = this.state.duration.toFixed(1).toString();
+		let cx = parseInt(this.state.cx * this.state.fx);
+		let cy = parseInt(this.state.cy * this.state.fy);
+		let x = parseInt(this.state.x * this.state.fx);
+		let y = parseInt(this.state.y * this.state.fy);
 		await this.ffmpeg.run(
 			"-ss",
 			"0.0",
@@ -71,10 +77,17 @@ class CropEditor extends React.Component {
 		this.setState({
 			downloadVideo: [...this.state.downloadVideo, video_url],
 			videoReady: true,
+			isConverting: false,
 		});
 	};
 	loaded = async () => {
 		await this.ffmpeg.load();
+	};
+	handlePlay = () => {
+		this.setState({ playing: true });
+	};
+	handlePause = () => {
+		this.setState({ playing: false });
 	};
 	handlePlayPause = () => {
 		this.setState({ playing: !this.state.playing });
@@ -101,6 +114,7 @@ class CropEditor extends React.Component {
 	};
 	ref = (player) => {
 		this.player = player;
+		console.log(player);
 	};
 	Duration = (seconds) => {
 		const date = new Date(seconds * 1000);
@@ -114,54 +128,67 @@ class CropEditor extends React.Component {
 			isMask: !this.state.isMask,
 		});
 	};
-  resize = (e) => {
-    console.log(e);
-  }
-  video = () => {
-    console.log(this.mains.current.getBoundingClientRect());
-    console.log(this.mains.current.duration);
-    console.log(this.mains.current.height);
-    console.log(this.mains.current.width);
-  }
 	render() {
 		return (
 			<>
 				<div className="crop">
 					<div className="video1">
-						{/* <ReactPlayer
-							className="vid"
-							ref={this.ref}
-							url={this.props.videoUrl}
-							playing={this.state.playing}
-							muted={this.state.muted}
-							onProgress={this.handleProgress}
-							onDuration={this.handleDuration}
-						/> */}
-            <video ref={this.mains} className="vide" controls width="640" height="360" muted={this.state.muted}>
-              <source src={this.props.videoUrl} type="video/mp4" />
-            </video>
-						{this.state.isMask ? (
-							<div className="bgHide">
-								<Rnd
-                  bounds=".vide"
-                  style={{
-                    border: "1px solid yellow",
-                    boxShadow: "0 0 0 1999px hsla(0, 0%, 0%, 0.6)",
-                  }}
-									default={{
-										x: 0,
-										y: 0,
-										width: 180,
-										height: 320,
-									}}
-                  onResizeStop={this.resize}
-                  onDragStop={this.resize}
-                  lockAspectRatio={9/16}
-								/>
-							</div>
-						) : (
-							""
-						)}
+						<div className="video2">
+							<ReactPlayer
+								ref={this.ref}
+								url={this.props.videoUrl}
+								width={this.state.width}
+								height={this.state.height}
+								playing={this.state.playing}
+								muted={this.state.muted}
+								onPlay={this.handlePlay}
+								onPause={this.handlePause}
+								onClick={this.handlePlayPause}
+								onProgress={this.handleProgress}
+								onDuration={this.handleDuration}
+							/>
+							{this.state.isMask ? (
+								<div className="bgHide">
+									<Rnd
+										bounds=".video1"
+										style={{
+											border: "2px solid white",
+											boxShadow:
+												"0 0 0 999px hsla(0, 0%, 0%, 0.6)",
+										}}
+										default={{
+											x: 0,
+											y: 0,
+											width: this.state.defaultWidth,
+											height: this.state.defaultHeight,
+										}}
+										lockAspectRatio={9 / 16}
+										onResizeStop={(
+											e,
+											direction,
+											ref,
+											delta,
+											position
+										) => {
+											this.setState({
+												cx: ref.offsetWidth,
+												cy: ref.offsetHeight,
+												x: position.x,
+												y: position.y,
+											});
+										}}
+										onDragStop={(e, direction) => {
+											this.setState({
+												x: direction.x,
+												y: direction.y,
+											});
+										}}
+									/>
+								</div>
+							) : (
+								""
+							)}
+						</div>
 					</div>
 					<div className="wrap">
 						<input
@@ -183,7 +210,6 @@ class CropEditor extends React.Component {
 							<span>{this.Duration(this.state.duration)}</span>
 						</div>
 					</div>
-          <button onClick={this.video}>click</button> 
 					<div className="controls wrap">
 						<div className="player-controls">
 							<button
@@ -214,15 +240,27 @@ class CropEditor extends React.Component {
 								title="Add Clips"
 								className="trim-control"
 								onClick={this.masks}
+								disabled={this.state.isConverting}
 							>
-								{this.state.isMask ? "DELETE MASK" : "ADD MASK"}
+								{this.state.isConverting ? (
+									<div className="loader"></div>
+								) : this.state.isMask ? (
+									"DELETE MASK"
+								) : (
+									"ADD MASK"
+								)}
 							</button>
 							<button
 								title="Convert Video"
 								className="convert"
 								onClick={this.converter}
+								disabled={this.state.isConverting}
 							>
-								CONVERT
+								{this.state.isConverting ? (
+									<div className="loader"></div>
+								) : (
+									"CONVERT"
+								)}
 							</button>
 						</div>
 					</div>

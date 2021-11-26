@@ -25,6 +25,7 @@ class VideoEditor extends React.Component {
 			timings: [],
 			start: 0,
 			end: 0,
+			isConverting: false,
 		};
 	}
 	ffmpeg = createFFmpeg({ log: true });
@@ -32,6 +33,7 @@ class VideoEditor extends React.Component {
 		this.loaded();
 	};
 	converter = async () => {
+		this.setState({ isConverting: true });
 		this.ffmpeg.FS(
 			"writeFile",
 			"test.mp4",
@@ -63,9 +65,10 @@ class VideoEditor extends React.Component {
 				downloadVideo: [...this.state.downloadVideo, video_url],
 			});
 		}
-		this.setState({ videoReady: true });
+		this.setState({ videoReady: true, isConverting: false });
 	};
 	exportOne = async (id) => {
+		this.setState({ isConverting: true });
 		this.ffmpeg.FS(
 			"writeFile",
 			"test.mp4",
@@ -99,7 +102,7 @@ class VideoEditor extends React.Component {
 				});
 			}
 		}
-		this.setState({ videoReady: true });
+		this.setState({ videoReady: true, isConverting: false });
 	};
 	loaded = async () => {
 		await this.ffmpeg.load();
@@ -187,13 +190,6 @@ class VideoEditor extends React.Component {
 			playing: false,
 		});
 	};
-  handleOne = (id) => {
-    let one = this.state.timings.filter((e) => e.id === id);
-    this.setState({
-      played: one[0].start / 100,
-      playing: !this.state.playing,
-    })
-  }
 	render = () => {
 		return (
 			<>
@@ -285,7 +281,7 @@ class VideoEditor extends React.Component {
 									title="Add Clips"
 									className="trim-control"
 									onClick={this.clips}
-                  disabled={this.state.end === 0}
+									disabled={this.state.end === 0 || this.state.isConverting}
 								>
 									ADD CLIP
 								</button>
@@ -293,8 +289,13 @@ class VideoEditor extends React.Component {
 									title="Convert Video"
 									className="convert"
 									onClick={this.converter}
-								>
-									EXPORT ALL
+                  disabled={this.state.isConverting}
+                >
+                  {this.state.isConverting ? (
+                    <div className="loader"></div>
+                  ) : (
+                    "EXPORT ALL"
+                  )}
 								</button>
 							</div>
 						</div>
@@ -312,8 +313,10 @@ class VideoEditor extends React.Component {
 												playing={this.state.playing}
 												timings={this.state.timings}
 												remove={this.remove.bind(this)}
-                        exportOne={this.exportOne.bind(this)}
-                        handleOne={this.handleOne.bind(this)}
+												exportOne={this.exportOne.bind(
+													this
+												)}
+                        isConverting={this.state.isConverting}
 											/>
 										);
 								  })}

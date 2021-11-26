@@ -143,8 +143,6 @@ class App extends React.Component {
 						videoUrl={this.state.videoUrl}
 						video_file={this.state.video_file}
 						darkMode={this.state.isDarkMode}
-            width={this.state.width}
-            height={this.state.height}
 					/>
 				)}
 				<div className={"theme_toggler"} onClick={this.toggleThemes}>
