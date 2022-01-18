@@ -36,15 +36,6 @@ class CropEditor extends React.Component {
 		};
 	}
 	ffmpeg = createFFmpeg({ log: true });
-	componentDidMount = () => {
-		this.loaded();
-		this.setState({
-			cx: this.state.defaultWidth,
-			cy: this.state.defaultHeight,
-			fx: this.props.width / this.state.width,
-			fy: this.props.height / this.state.height,
-		});
-	};
 	converter = async () => {
 		this.setState({ isConverting: true });
 		this.ffmpeg.FS(
@@ -114,7 +105,6 @@ class CropEditor extends React.Component {
 	};
 	ref = (player) => {
 		this.player = player;
-		console.log(player);
 	};
 	Duration = (seconds) => {
 		const date = new Date(seconds * 1000);
@@ -126,6 +116,15 @@ class CropEditor extends React.Component {
 	masks = () => {
 		this.setState({
 			isMask: !this.state.isMask,
+		});
+	};
+	componentDidMount = () => {
+		this.loaded();
+		this.setState({
+			cx: this.state.defaultWidth,
+			cy: this.state.defaultHeight,
+			fx: this.props.width / this.state.width,
+			fy: this.props.height / this.state.height,
 		});
 	};
 	render() {

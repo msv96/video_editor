@@ -29,9 +29,6 @@ class VideoEditor extends React.Component {
 		};
 	}
 	ffmpeg = createFFmpeg({ log: true });
-	componentDidMount = () => {
-		this.loaded();
-	};
 	converter = async () => {
 		this.setState({ isConverting: true });
 		this.ffmpeg.FS(
@@ -189,6 +186,9 @@ class VideoEditor extends React.Component {
 			end: this.state.played * 100,
 			playing: false,
 		});
+	};
+	componentDidMount = () => {
+		this.loaded();
 	};
 	render = () => {
 		return (
